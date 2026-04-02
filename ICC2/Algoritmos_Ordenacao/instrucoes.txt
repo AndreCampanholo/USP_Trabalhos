@@ -1,0 +1,18 @@
+Projeto 2 - Introdução à Ciência de Computação II - Prof. Dr. Marcelo Garcia Manzato
+
+André Campanholo Paschoalini NºUSP - 16862892
+Pedro Hamamoto da Palma   NºUSP - 16818280
+
+Instruções de Compilação do Programa:
+Rodar seguintes comandos, certificando-se de que está dentro da pasta correta:
+1º. gcc -o t2 t2.c
+2º. ./t2 ou .\t2 (a depender do terminal utilizado).
+
+Instruções de Execução do Programa:
+Há uma interface que apresenta as opções dos parâmetros da ordenação.
+- Primeiro, pede-se que informe o tamanho do vetor a ser ordenado. É necessário apenas digitar o número e apertar ENTER. Não há restrições para o número informado (não precisa ser 100, 1000, 10000 ou 100000).
+- Depois, dá as opções dos 9 métodos de ordenação, cada um com um número de 1 a 9 ao lado. É preciso somente digitar o número do método de ordenação desejado e apertar ENTER.
+- Por fim, informa-se qual a configuração inicial do vetor a ser ordenado. Cada uma das 3 possibilidade está enumerada, igualmente aos métodos de ordenação. Apenas digitar o número correspondente e pressionar ENTER.
+
+Ao fim, serão impressas as estatísticas desejadas.
+Para o caso aleatório, o programa executa 5 ordenações para 5 vetores aleatórios diferentes, logo, as estatísticas são impressas 5 vezes, uma para cada ordenação.
