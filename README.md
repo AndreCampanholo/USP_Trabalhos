@@ -1,2 +1,2 @@
-# USP_Codes
-Repositório com códigos desenvolvidos durante minha graduação na USP.
+# USP_Trabalhos
+Repositório com trabalhos feitos durante minha graduação na USP.
