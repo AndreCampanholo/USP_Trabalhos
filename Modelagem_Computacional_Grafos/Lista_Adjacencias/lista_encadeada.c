@@ -6,7 +6,8 @@
 #define TAM 100
 
 typedef struct no {
-    int conteudo;
+    int id_no;
+    int peso;
     struct no *proximo;
 } NO;
 
@@ -14,37 +15,18 @@ struct lista{
     NO *inicio;
     NO *fim;
     int tamanho;
-    bool ordenada;
 };
 
 //FUNÇÕES AUXILIARES
-bool lista_inserir_fim(LISTA *l, int *conteudo) {
-    NO *novo = (NO *)malloc(sizeof(NO));
 
-    if(novo != NULL) {
-        novo->conteudo = conteudo;
-        novo->proximo = NULL;
-
-        if(lista_vazia(l)) {
-            l->inicio = novo;
-        } else {
-            l->fim->proximo = novo;
-        }
-        l->fim = novo;
-        l->tamanho++;
-
-        return true;
-    }
-    return false;
-}
-
-bool lista_inserir_ordenada(LISTA *l, int *conteudo) {
+bool lista_inserir_ordenada(LISTA *l, int id_no, int peso) {
     NO *novo = (NO *)malloc(sizeof(NO));
     if (novo == NULL) {
         return false;
     }
 
-    novo->conteudo = conteudo;
+    novo->id_no = id_no;
+    novo->peso = peso;
     novo->proximo = NULL;
 
     if (lista_vazia(l)) {
@@ -57,7 +39,7 @@ bool lista_inserir_ordenada(LISTA *l, int *conteudo) {
     NO *anterior = NULL;
     NO *atual = l->inicio;
 
-    while(atual != NULL && atual->conteudo < conteudo) {
+    while(atual != NULL && atual->id_no < id_no) {
         anterior = atual;
         atual = atual->proximo;
     }
@@ -76,71 +58,55 @@ bool lista_inserir_ordenada(LISTA *l, int *conteudo) {
     return true;
 }
 
-int *lista_buscar_recursiva(NO *n, int chave) {
-    if(n == NULL) {
-        return NULL;
-    }
-    if(n->conteudo == chave) {
-        return n->conteudo;
-    }
-    return lista_buscar_recursiva(n->proximo, chave);
-}
-
-int *lista_busca_ordenada(LISTA *l, int chave)
+int lista_busca_ordenada(LISTA *l, int b)
 {
-    NO *p = NULL;
     if (l != NULL)
     {
-        p = l->inicio;
-        while (p != NULL && p->conteudo < chave)
+        NO *p = l->inicio;
+        while (p != NULL && p->id_no < b)
         {
             p = p->proximo;
         }
-        if (p == NULL || p->conteudo > chave)
-            return (NULL);
+        if (p == NULL || p->id_no > b)
+            return -1;
         else
         {
-            return (p->conteudo);
+            return (p->peso);
         }
     }
-    return (p);
+    return -1;
 }
 
 //FUNÇÕES PRINCIPAIS
-LISTA *lista_criar(bool ordenada) {
+LISTA *lista_criar() {
     LISTA *l = (LISTA *)malloc(sizeof(LISTA));
 
     if(l != NULL) {
         l->inicio = NULL;
         l->fim = NULL;
         l->tamanho = 0;
-        l->ordenada = ordenada;
     }
 
     return l;
 }
 
-bool lista_inserir(LISTA *l, int *conteudo) {
-    if(l != NULL && conteudo != NULL && !lista_cheia(l)) {
-        if(l->ordenada) {
-            return lista_inserir_ordenada(l, conteudo);
-        } else {
-            return lista_inserir_fim(l, conteudo);
-        }
+bool lista_inserir(LISTA *l, int id_no, int peso) {
+    if(l != NULL && !lista_cheia(l)) {
+        return lista_inserir_ordenada(l, id_no, peso);
     }
 
     return false;
 }
 
-int lista_remover(LISTA *l, int chave) {
+bool lista_remover(LISTA *l, int chave) {
     if(l == NULL || lista_vazia(l)) {
-        return NULL;
+        return false;
     }
 
     NO *tras = NULL;
     NO *frente = l->inicio;
 
-    while(frente != NULL && frente->conteudo != chave) {
+    while(frente != NULL && frente->id_no != chave) {
         tras = frente;
         frente = frente->proximo;
     }
@@ -156,25 +122,17 @@ int lista_remover(LISTA *l, int chave) {
             tras->proximo = frente->proximo;
             frente->proximo = NULL;
         }
-        int conteudo = frente->conteudo;
         free(frente);
         l->tamanho--;
-        return conteudo;
+        return true;
     }
-    return NULL;
+    return false;
 }
 
 int lista_busca(LISTA *l, int chave) {
-    int *conteudo;
-
-    if(l != NULL) {
-        if(!l->ordenada) {
-            return lista_buscar_recursiva(l->inicio, chave);
-        } else {
-            return lista_busca_ordenada(l, chave);
-        }
-    }
-    
+    if(l != NULL) 
+        return lista_busca_ordenada(l, chave);
+    return -1;
 }
 
 bool lista_apagar(LISTA **l) {
@@ -206,4 +164,57 @@ bool lista_cheia(LISTA *l) {
         return true;
     }
     return false;
+}
+
+int lista_tamanho(LISTA *l) {
+    if(l == NULL) {
+        return 0;
+    }
+    return l->tamanho;
+}
+
+int *lista_extrair_no_ids(LISTA *l) {
+    if(l != NULL) {
+        NO *aux = l->inicio;
+        int *vizinhos = (int *)malloc(l->tamanho * sizeof(int));
+        int i = 0;
+        while(aux != NULL) {
+            vizinhos[i] = aux->id_no;
+            aux = aux->proximo;
+            i++;
+        }
+        return vizinhos;
+    }
+    return NULL;
+}
+
+int **lista_percorrer_arestas(LISTA *l) {
+    if(l != NULL && l->inicio != NULL && l->tamanho > 0) {
+        NO* aux = l->inicio;
+        int **no_b_peso = (int **)malloc(l->tamanho * sizeof(int *));
+        if(no_b_peso == NULL) {
+            return NULL;
+        }
+
+        for(int i = 0; i < l->tamanho; i++) {
+            no_b_peso[i] = (int *)malloc(2 * sizeof(int));
+            if(no_b_peso[i] == NULL) {
+                for(int j = 0; j < i; j++) {
+                    free(no_b_peso[j]);
+                }
+                free(no_b_peso);
+                return NULL;
+            }
+        }
+
+        int i = 0;
+        while(aux != NULL && i < l->tamanho) {
+            no_b_peso[i][0] = aux->id_no;
+            no_b_peso[i][1] = aux->peso;
+            aux = aux->proximo;
+            i++;
+        }
+        return no_b_peso;
+    }
+    return NULL;
 }
